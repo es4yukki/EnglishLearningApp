@@ -29,44 +29,104 @@
 pip install -r requirements.txt
 ```
 
-### 2. API キーの設定
+### 2. 設定ファイルの作成
 
-`config/config.json` ファイルを作成してAPIキーを設定：
+`config/config.json` ファイルを作成して各種設定を行います：
 
 ```json
 {
   "api_keys": {
     "anthropic": "your-anthropic-api-key-here",
     "openai": "your-openai-api-key-here",
-    "azure_openai": {
-      "api_key": "your-azure-openai-api-key",
-      "endpoint": "https://your-resource.openai.azure.com/",
-      "api_version": "2024-02-15-preview"
-    }
+    "azure_openai": "your-azure-openai-api-key-here"
+  },
+  "azure_openai": {
+    "endpoint": "https://your-resource.openai.azure.com/",
+    "api_version": "2024-02-01"
   },
   "default_provider": "anthropic",
-  "default_level": "400",
+  "models": {
+    "anthropic": "claude-3-5-haiku-20241022",
+    "openai": "gpt-4o-mini",
+    "azure_openai": "gpt-4o-mini"
+  },
+  "ui": {
+    "default_level": "600",
+    "theme": "light"
+  },
   "server": {
     "host": "0.0.0.0",
     "port": 8000,
     "debug": true
+  },
+  "proxy": {
+    "http": "http://proxy.company.com:8080",
+    "https": "http://proxy.company.com:8080", 
+    "enabled": false
+  },
+  "api_endpoints": {
+    "anthropic": "https://api.anthropic.com",
+    "openai": "https://api.openai.com/v1",
+    "azure_openai": ""
   }
 }
 ```
 
-または環境変数で設定：
+#### 🔧 設定項目の説明
+
+**APIキー設定** - 使用するAIサービスのAPIキーを設定
+- `api_keys.anthropic`: Anthropic Claude APIキー
+- `api_keys.openai`: OpenAI APIキー  
+- `api_keys.azure_openai`: Azure OpenAI APIキー
+
+**プロキシ設定** - 企業環境での使用時に設定
+- `proxy.http`: HTTPプロキシURL
+- `proxy.https`: HTTPSプロキシURL
+- `proxy.enabled`: プロキシ使用の有効/無効
+
+**APIエンドポイント** - カスタムエンドポイント使用時に設定
+- `api_endpoints.anthropic`: Anthropic APIエンドポイント
+- `api_endpoints.openai`: OpenAI APIエンドポイント
+- `api_endpoints.azure_openai`: Azure OpenAI エンドポイント（`azure_openai.endpoint`で設定）
+
+**モデル設定** - 各プロバイダーで使用するモデル名
+- `models.anthropic`: Claude使用モデル（例：claude-3-5-haiku-20241022）
+- `models.openai`: OpenAI使用モデル（例：gpt-4o-mini）
+- `models.azure_openai`: Azure OpenAI使用モデル
+
+#### 🌍 環境変数での設定
+
+設定ファイルの代わりに環境変数でも設定可能です（環境変数が優先されます）：
 
 ```bash
-# Anthropic Claude を使用する場合
+# APIキー
 export ANTHROPIC_API_KEY='your-anthropic-api-key'
-
-# OpenAI を使用する場合
 export OPENAI_API_KEY='your-openai-api-key'
-
-# Azure OpenAI を使用する場合
 export AZURE_OPENAI_API_KEY='your-azure-openai-api-key'
 export AZURE_OPENAI_ENDPOINT='https://your-resource.openai.azure.com/'
+
+# プロキシ設定（企業環境）
+export HTTP_PROXY='http://proxy.company.com:8080'
+export HTTPS_PROXY='http://proxy.company.com:8080'
+# または小文字形式
+export http_proxy='http://proxy.company.com:8080'
+export https_proxy='http://proxy.company.com:8080'
 ```
+
+#### ⚙️ 最小設定
+
+アプリを動かすために必要な最小限の設定：
+
+```json
+{
+  "api_keys": {
+    "anthropic": "your-anthropic-api-key-here"
+  },
+  "default_provider": "anthropic"
+}
+```
+
+他の設定項目は自動的にデフォルト値が使用されます。
 
 ### 3. アプリケーションの起動
 

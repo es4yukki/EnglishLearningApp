@@ -49,6 +49,16 @@ class Settings:
             "ui": {
                 "default_level": "400",
                 "theme": "light"
+            },
+            "proxy": {
+                "http": "",
+                "https": "",
+                "enabled": False
+            },
+            "api_endpoints": {
+                "anthropic": "https://api.anthropic.com",
+                "openai": "https://api.openai.com/v1",
+                "azure_openai": ""
             }
         }
     
@@ -106,6 +116,26 @@ class Settings:
     def get_azure_openai_api_version(self) -> str:
         """Azure OpenAI API バージョンを取得"""
         return self._config.get("azure_openai", {}).get("api_version", "2024-02-01")
+    
+    def get_proxy_config(self) -> Dict[str, str]:
+        """プロキシ設定を取得"""
+        proxy_config = self._config.get("proxy", {})
+        
+        # 環境変数も確認
+        http_proxy = os.getenv("HTTP_PROXY") or os.getenv("http_proxy") or proxy_config.get("http", "")
+        https_proxy = os.getenv("HTTPS_PROXY") or os.getenv("https_proxy") or proxy_config.get("https", "")
+        
+        return {
+            "http": http_proxy,
+            "https": https_proxy,
+            "enabled": proxy_config.get("enabled", False) or bool(http_proxy or https_proxy)
+        }
+    
+    def get_api_endpoint(self, provider: str) -> str:
+        """指定されたプロバイダーのAPIエンドポイントを取得"""
+        endpoints = self._config.get("api_endpoints", {})
+        default_endpoints = self._default_config()["api_endpoints"]
+        return endpoints.get(provider, default_endpoints.get(provider, ""))
 
 # グローバル設定インスタンス
 settings = Settings()

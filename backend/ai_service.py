@@ -3,6 +3,7 @@
 import anthropic
 import openai
 from openai import AzureOpenAI
+import os
 from typing import Dict, List, Optional
 from config.settings import settings
 from .prompts import prompt_manager
@@ -24,20 +25,50 @@ class AIService:
         azure_openai_key = settings.get_api_key('azure_openai')
         azure_openai_endpoint = settings.get_azure_openai_endpoint()
         
+        # プロキシ設定を取得して環境変数に設定
+        proxy_config = settings.get_proxy_config()
+        if proxy_config.get("enabled"):
+            if proxy_config.get("http"):
+                os.environ["HTTP_PROXY"] = proxy_config["http"]
+            if proxy_config.get("https"):
+                os.environ["HTTPS_PROXY"] = proxy_config["https"]
+            print(f"プロキシ設定を使用: HTTP={proxy_config.get('http')}, HTTPS={proxy_config.get('https')}")
+        
         if anthropic_key:
-            self.anthropic_client = anthropic.Anthropic(api_key=anthropic_key)
+            # Anthropic API用の設定
+            anthropic_args = {"api_key": anthropic_key}
+            
+            # カスタムエンドポイントがある場合は設定
+            custom_endpoint = settings.get_api_endpoint('anthropic')
+            if custom_endpoint and custom_endpoint != "https://api.anthropic.com":
+                anthropic_args["base_url"] = custom_endpoint
+                print(f"Anthropic カスタムエンドポイント使用: {custom_endpoint}")
+            
+            self.anthropic_client = anthropic.Anthropic(**anthropic_args)
             print("Anthropic Claude API が利用可能です")
         
         if openai_key:
-            self.openai_client = openai.OpenAI(api_key=openai_key)
+            # OpenAI API用の設定
+            openai_args = {"api_key": openai_key}
+            
+            # カスタムエンドポイントがある場合は設定
+            custom_endpoint = settings.get_api_endpoint('openai')
+            if custom_endpoint and custom_endpoint != "https://api.openai.com/v1":
+                openai_args["base_url"] = custom_endpoint
+                print(f"OpenAI カスタムエンドポイント使用: {custom_endpoint}")
+            
+            self.openai_client = openai.OpenAI(**openai_args)
             print("OpenAI API が利用可能です")
         
         if azure_openai_key and azure_openai_endpoint:
-            self.azure_openai_client = AzureOpenAI(
-                api_key=azure_openai_key,
-                azure_endpoint=azure_openai_endpoint,
-                api_version=settings.get_azure_openai_api_version()
-            )
+            # Azure OpenAI API用の設定
+            azure_args = {
+                "api_key": azure_openai_key,
+                "azure_endpoint": azure_openai_endpoint,
+                "api_version": settings.get_azure_openai_api_version()
+            }
+            
+            self.azure_openai_client = AzureOpenAI(**azure_args)
             print("Azure OpenAI API が利用可能です")
         elif azure_openai_key or azure_openai_endpoint:
             print("Warning: Azure OpenAI の設定が不完全です。APIキーとエンドポイントの両方を設定してください。")
