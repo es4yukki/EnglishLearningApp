@@ -28,12 +28,12 @@ class Settings:
         return {
             "api_keys": {
                 "anthropic": "",
-                "openai": "",
                 "azure_openai": ""
             },
             "azure_openai": {
                 "endpoint": "",
-                "api_version": "2024-02-01"
+                "api_version": "2024-12-01-preview",
+                "deployment_name": ""
             },
             "default_provider": "anthropic",
             "server": {
@@ -43,22 +43,11 @@ class Settings:
             },
             "models": {
                 "anthropic": "claude-3-haiku-20240307",
-                "openai": "gpt-3.5-turbo",
-                "azure_openai": "gpt-4o-mini"
+                "azure_openai": "gpt-4.1-mini"
             },
             "ui": {
                 "default_level": "400",
                 "theme": "light"
-            },
-            "proxy": {
-                "http": "",
-                "https": "",
-                "enabled": False
-            },
-            "api_endpoints": {
-                "anthropic": "https://api.anthropic.com",
-                "openai": "https://api.openai.com/v1",
-                "azure_openai": ""
             }
         }
     
@@ -74,7 +63,6 @@ class Settings:
         """APIキーを取得（環境変数 > 設定ファイルの順）"""
         env_keys = {
             "anthropic": "ANTHROPIC_API_KEY",
-            "openai": "OPENAI_API_KEY",
             "azure_openai": "AZURE_OPENAI_API_KEY"
         }
         
@@ -115,27 +103,17 @@ class Settings:
     
     def get_azure_openai_api_version(self) -> str:
         """Azure OpenAI API バージョンを取得"""
-        return self._config.get("azure_openai", {}).get("api_version", "2024-02-01")
+        return self._config.get("azure_openai", {}).get("api_version", "2024-12-01-preview")
     
-    def get_proxy_config(self) -> Dict[str, str]:
-        """プロキシ設定を取得"""
-        proxy_config = self._config.get("proxy", {})
+    def get_azure_openai_deployment_name(self) -> Optional[str]:
+        """Azure OpenAI デプロイメント名を取得（環境変数 > 設定ファイルの順）"""
+        # 環境変数を最優先
+        env_deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+        if env_deployment:
+            return env_deployment
         
-        # 環境変数も確認
-        http_proxy = os.getenv("HTTP_PROXY") or os.getenv("http_proxy") or proxy_config.get("http", "")
-        https_proxy = os.getenv("HTTPS_PROXY") or os.getenv("https_proxy") or proxy_config.get("https", "")
-        
-        return {
-            "http": http_proxy,
-            "https": https_proxy,
-            "enabled": proxy_config.get("enabled", False) or bool(http_proxy or https_proxy)
-        }
-    
-    def get_api_endpoint(self, provider: str) -> str:
-        """指定されたプロバイダーのAPIエンドポイントを取得"""
-        endpoints = self._config.get("api_endpoints", {})
-        default_endpoints = self._default_config()["api_endpoints"]
-        return endpoints.get(provider, default_endpoints.get(provider, ""))
+        # 設定ファイルから取得
+        return self._config.get("azure_openai", {}).get("deployment_name")
 
 # グローバル設定インスタンス
 settings = Settings()

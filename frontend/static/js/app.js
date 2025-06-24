@@ -606,7 +606,6 @@ class EnglishLearningApp {
             if (data.success) {
                 const providerNames = {
                     'anthropic': 'Claude (Anthropic)',
-                    'openai': 'GPT (OpenAI)', 
                     'azure_openai': 'GPT (Azure OpenAI)'
                 };
                 this.addSystemMessage(`AI provider switched to ${providerNames[provider]}`);
