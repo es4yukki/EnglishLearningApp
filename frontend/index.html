@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Learning App</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body>
+    <div class="header">
+        <h1>English Learning App</h1>
+        <div class="controls">
+            <select id="aiProvider" class="control-select">
+                <option value="anthropic">Claude (Anthropic)</option>
+                <option value="openai">GPT (OpenAI)</option>
+                <option value="azure_openai">GPT (Azure OpenAI)</option>
+            </select>
+
+            <select id="englishLevel" class="control-select">
+                <option value="400">TOEIC 400 Level</option>
+                <option value="600">TOEIC 600 Level</option>
+                <option value="800">TOEIC 800 Level</option>
+            </select>
+
+            <button id="resetConversation" class="control-btn">Reset Chat</button>
+            <button id="manualButton" class="control-btn" title="Show manual">📖</button>
+            <button id="themeToggle" class="control-btn">🌙</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="panel translation-panel" id="translationPanel">
+            <h3>Japanese Translation
+                <label class="toggle-switch" title="Toggle Japanese Translation">
+                    <input type="checkbox" id="translationToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </h3>
+            <div id="translationContent" class="panel-content">
+                <p class="placeholder">和訳がここに表示されます</p>
+            </div>
+        </div>
+
+        <div class="panel conversation-panel">
+            <h3>Conversation with AI Teacher
+                <button id="hintButton" class="hint-btn" title="Get English expression hint">💡</button>
+            </h3>
+            <div id="conversationContent" class="panel-content">
+                <div class="message ai-message">
+                    <p>Hello! I'm your English teacher. How can I help you practice English today?</p>
+                </div>
+            </div>
+            <div class="input-area">
+                <textarea id="userInput" placeholder="Type your message here..."></textarea>
+                <button id="sendMessage" class="send-btn">✈️</button>
+            </div>
+        </div>
+
+        <div class="panel feedback-panel" id="feedbackPanel">
+            <h3>Text Feedback
+                <label class="toggle-switch" title="Toggle Text Feedback">
+                    <input type="checkbox" id="feedbackToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </h3>
+            <div id="feedbackContent" class="panel-content">
+                <p class="placeholder">フィードバックがここに表示されます</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hint Popup -->
+    <div id="hintPopup" class="hint-popup">
+        <div class="hint-popup-content">
+            <div class="hint-popup-header">
+                <h4>English Expression Hint</h4>
+                <button id="closeHintPopup" class="close-btn">&times;</button>
+            </div>
+            <div class="hint-popup-body">
+                <div class="hint-input-section">
+                    <label for="hintInput" class="hint-label">英語で伝えたい内容を日本語で入力してください:</label>
+                    <div class="hint-input-group">
+                        <textarea id="hintInput" placeholder="例: 〜が不安だ"></textarea>
+                        <button id="getHint" class="hint-get-btn">Get Hint</button>
+                    </div>
+                </div>
+                <div id="hintResult" class="hint-result" style="display: none;">
+                    <h5>English Expressions:</h5>
+                    <div id="hintText" class="hint-text"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Popup -->
+    <div id="manualPopup" class="manual-popup">
+        <div class="manual-popup-content">
+            <div class="manual-popup-header">
+                <h4>📖 User Manual</h4>
+                <button id="closeManualPopup" class="close-btn">&times;</button>
+            </div>
+            <div class="manual-popup-body">
+                <div class="manual-section">
+                    <h5>💬 Conversation Panel</h5>
+                    <p>Chat with AI teacher in English. Use the ✈️ button to send messages.</p>
+                </div>
+                <div class="manual-section">
+                    <h5>🇯🇵 Translation Panel</h5>
+                    <p>Japanese translations appear here. Toggle ON/OFF with the switch.</p>
+                </div>
+                <div class="manual-section">
+                    <h5>📝 Feedback Panel</h5>
+                    <p>Get writing improvement suggestions. Toggle ON/OFF with the switch.</p>
+                </div>
+                <div class="manual-section">
+                    <h5>💡 Hint Feature</h5>
+                    <p>Click the 💡 button to get English expressions for Japanese phrases.</p>
+                </div>
+                <div class="manual-section">
+                    <h5>⚙️ Settings</h5>
+                    <p>• Select AI provider (Claude/GPT/Azure OpenAI)<br>• Choose English level (TOEIC 400/600/800)<br>• Reset conversation anytime<br>• Toggle dark/light mode</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/app.js"></script>
+</body>
+
+</html>
